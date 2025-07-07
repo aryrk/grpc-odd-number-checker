@@ -1,0 +1,14 @@
+syntax = "proto3";
+package numberchecker;
+
+service CheckService{
+    rpc IsOddNumber(OddCheckeRequest) returns (OddCheckerReply) {}
+}
+
+message OddCheckeRequest{
+    int32 number = 1;
+}
+
+message OddCheckerReply{
+    bool isOdd = 1;
+}
