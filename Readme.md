@@ -21,6 +21,7 @@ sudo apt update
 sudo apt install -y build-essential autoconf libtool pkg-config cmake git
 
 # Install Protobuf
+sudo apt-get install libgrpc++-dev protobuf-compiler-grpc
 sudo apt install -y protobuf-compiler libprotobuf-dev
 
 # Install gRPC and its dependencies
@@ -41,7 +42,7 @@ sudo apt install -y libgrpc++-dev grpc-proto
     mkdir build
     cd build
     cmake ..
-    make
+    cmake --build .
     ```
 
     This will generate the `build/client` and `build/server` executables in the `build` directory.
