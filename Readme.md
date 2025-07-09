@@ -8,23 +8,25 @@ This project demonstrates a simple gRPC service in C++ that checks if a number i
 
 - **C++ Compiler** (e.g., g++, clang++)
 - **CMake** (>= 3.15)
+- **Conan** (C++ package manager)
 - **Protobuf** (>= 3.12)
 - **gRPC** (>= 1.30)
 
 ---
 
-## Installing Protobuf and gRPC on Ubuntu
+## Installing Protobuf, gRPC, and Conan on Ubuntu
 
 ```sh
 # Install dependencies
 sudo apt update
-sudo apt install -y build-essential autoconf libtool pkg-config cmake git
+sudo apt install -y build-essential autoconf libtool pkg-config cmake git python3-pip
 
-# Install Protobuf
+# Install Conan (if not already installed)
+pip3 install --user conan
+
+# Install Protobuf and gRPC (system packages, optional if using Conan for all dependencies)
 sudo apt-get install libgrpc++-dev protobuf-compiler-grpc
 sudo apt install -y protobuf-compiler libprotobuf-dev
-
-# Install gRPC and its dependencies
 sudo apt install -y libgrpc++-dev grpc-proto
 ```
 
@@ -34,14 +36,19 @@ sudo apt install -y libgrpc++-dev grpc-proto
 
 ---
 
-## Building the Project
+## Building the Project (with Conan)
 
-1. **Create a build directory and run CMake:**
+1. **Install dependencies with Conan:**
 
     ```sh
-    mkdir build
+    conan install . --output-folder=build --build=missing
+    ```
+
+2. **Configure and build with CMake:**
+
+    ```sh
     cd build
-    cmake ..
+    cmake .. -DCMAKE_BUILD_TYPE=Release
     cmake --build .
     ```
 
@@ -104,7 +111,8 @@ rm -rf build/
 ## Notes
 
 - The build system will automatically generate C++ source/header files from your `.proto` file.
-- If you change `proto/numberchecker.proto`, just rebuild (`make`) to regenerate the code.
+- If you change `proto/numberchecker.proto`, just rebuild to regenerate the code.
+- Conan will handle C++ library dependencies (see `conanfile.txt`).
 
 ---
 
@@ -112,6 +120,7 @@ rm -rf build/
 
 - [gRPC C++ Documentation](https://grpc.io/docs/languages/cpp/)
 - [Protocol Buffers Documentation](https://developers.google.com/protocol-buffers)
+- [Conan C++ Package Manager](https://conan.io/)
 
 ---
 

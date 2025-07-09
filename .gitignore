@@ -3,3 +3,4 @@ build/*
 *.Identifier
 *.pb.cc
 *.pb.h
+CMakeUser*

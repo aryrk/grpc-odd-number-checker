@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
 project(OddNumberChecker)
 
-list(APPEND CMAKE_PREFIX_PATH "/opt/grpc" "/opt/protobuf")
+# list(APPEND CMAKE_PREFIX_PATH "/opt/grpc" "/opt/protobuf")
 list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(PREPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}")
 
+find_package(uwebsockets REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(GRPC REQUIRED)
 
@@ -22,4 +24,4 @@ target_link_libraries(client gRPC::grpc++ protobuf::libprotobuf)
 
 add_executable(server src/server.cpp ${PROTO_SRCS} ${GRPC_SRCS})
 target_include_directories(server PRIVATE ${PROTO_SRC_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(server gRPC::grpc++ protobuf::libprotobuf)
+target_link_libraries(server gRPC::grpc++ protobuf::libprotobuf uwebsockets::uwebsockets)
