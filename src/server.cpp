@@ -21,7 +21,7 @@ using grpc::ServerContext;
 using grpc::Status;
 
 using numberchecker::CheckService;
-using numberchecker::OddCheckeRequest;
+using numberchecker::OddCheckerRequest;
 using numberchecker::OddCheckerReply;
 
 struct PerSocketData
@@ -44,7 +44,7 @@ void writeRapidJSON(int number, bool is_odd)
 class CheckServiceImpl final : public CheckService::Service
 {
 public:
-    Status IsOddNumber(ServerContext *context, const OddCheckeRequest *request, OddCheckerReply *response) override
+    Status isOddNumber(ServerContext *context, const OddCheckerRequest *request, OddCheckerReply *response) override
     {
         int number = request->number();
         bool is_odd = (number % 2 != 0);

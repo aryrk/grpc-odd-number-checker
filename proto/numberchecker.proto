@@ -3,11 +3,11 @@ package numberchecker;
 import "google/protobuf/empty.proto";
 
 service CheckService{
-    rpc IsOddNumber(OddCheckeRequest) returns (OddCheckerReply) {}
+    rpc isOddNumber(OddCheckerRequest) returns (OddCheckerReply) {}
     rpc clearCache(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }
 
-message OddCheckeRequest{
+message OddCheckerRequest{
     int32 number = 1;
 }
 

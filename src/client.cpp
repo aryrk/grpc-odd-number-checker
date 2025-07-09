@@ -9,7 +9,7 @@ using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
 using numberchecker::CheckService;
-using numberchecker::OddCheckeRequest;
+using numberchecker::OddCheckerRequest;
 using numberchecker::OddCheckerReply;
 
 class CheckServiceClient
@@ -17,13 +17,13 @@ class CheckServiceClient
 public:
     CheckServiceClient(std::shared_ptr<grpc::Channel> channel)
         : stub_(CheckService::NewStub(channel)) {}
-    bool IsOddNumber(int number)
+    bool isOddNumber(int number)
     {
-        OddCheckeRequest request;
+        OddCheckerRequest request;
         request.set_number(number);
         OddCheckerReply response;
         grpc::ClientContext context;
-        grpc::Status status = stub_->IsOddNumber(&context, request, &response);
+        grpc::Status status = stub_->isOddNumber(&context, request, &response);
         if (status.ok())
         {
             return response.isodd();
@@ -35,7 +35,7 @@ public:
             return false;
         }
     }
-    void ClearCache()
+    void clearCache()
     {
         google::protobuf::Empty request;
         google::protobuf::Empty response;
@@ -52,13 +52,13 @@ private:
     std::unique_ptr<CheckService::Stub> stub_;
 };
 
-void numberChecker(CheckServiceClient &client)
+void runNumberChecker(CheckServiceClient &client)
 {
     int number;
     std::cout << "Enter a number to check if it is odd: ";
     std::cin >> number;
 
-    bool is_odd = client.IsOddNumber(number);
+    bool is_odd = client.isOddNumber(number);
     std::cout << "The number " << number << (is_odd ? " is odd." : " is not odd.") << std::endl;
 }
 
@@ -69,19 +69,19 @@ int main(int argc, char **argv)
 
     while (true)
     {
-        int input;
+        int choice;
         std::cout << "1. Check if a number is odd\n";
         std::cout << "2. Clear cache (delete websocket data)\n";
         std::cout << "3. Exit\n";
         std::cout << "Enter your choice: ";
-        std::cin >> input;
-        switch (input)
+        std::cin >> choice;
+        switch (choice)
         {
         case 1:
-            numberChecker(client);
+            runNumberChecker(client);
             break;
         case 2:
-            client.ClearCache();
+            client.clearCache();
             std::cout << "Cache cleared." << std::endl;
             break;
         case 3:
