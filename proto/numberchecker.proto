@@ -1,8 +1,10 @@
 syntax = "proto3";
 package numberchecker;
+import "google/protobuf/empty.proto";
 
 service CheckService{
     rpc IsOddNumber(OddCheckeRequest) returns (OddCheckerReply) {}
+    rpc clearCache(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }
 
 message OddCheckeRequest{

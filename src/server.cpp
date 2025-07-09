@@ -32,6 +32,15 @@ std::vector<uWS::WebSocket<false, true, PerSocketData> *> clients;
 std::mutex clients_mutex;
 std::atomic<bool> running{true};
 
+rapidjson::Document WebSocketJSONData;
+
+void writeRapidJSON(int number, bool is_odd)
+{
+    WebSocketJSONData.SetObject();
+    auto &alloc = WebSocketJSONData.GetAllocator();
+    WebSocketJSONData.AddMember("number", number, alloc);
+    WebSocketJSONData.AddMember("is_odd", is_odd, alloc);
+}
 class CheckServiceImpl final : public CheckService::Service
 {
 public:
@@ -41,26 +50,24 @@ public:
         bool is_odd = (number % 2 != 0);
         response->set_isodd(is_odd);
 
-        rapidjson::Document d;
-        d.SetObject();
-        auto &alloc = d.GetAllocator();
-        d.AddMember("number", number, alloc);
-        d.AddMember("is_odd", is_odd, alloc);
+        writeRapidJSON(number, is_odd);
 
-        rapidjson::StringBuffer buffer;
-        rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-        d.Accept(writer);
-
-        std::string json_msg = buffer.GetString();
-
-        std::lock_guard<std::mutex> lock(clients_mutex);
-        for (auto *ws : clients)
-        {
-            ws->send(json_msg, uWS::OpCode::TEXT);
-        }
+        return Status::OK;
+    }
+    Status clearCache(ServerContext *context, const google::protobuf::Empty *request, google::protobuf::Empty *response) override
+    {
+        WebSocketJSONData.SetNull();
         return Status::OK;
     }
 };
+
+std::string readRapidJSON()
+{
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    WebSocketJSONData.Accept(writer);
+    return buffer.GetString();
+}
 
 void RunServer()
 {
@@ -75,9 +82,33 @@ void RunServer()
     server->Wait();
 }
 
+void broadcastMessage()
+{
+    while (running)
+    {
+
+        if (WebSocketJSONData.IsNull())
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            continue;
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(clients_mutex);
+            for (auto *ws : clients)
+            {
+                ws->send(readRapidJSON(), uWS::OpCode::TEXT);
+            }
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+}
+
 int main(int argc, char **argv)
 {
     std::thread grpc_thread(RunServer);
+    std::thread websocket_thread(broadcastMessage);
 
     uWS::App()
         .ws<PerSocketData>("/*", {.open = [](auto *ws)
@@ -99,5 +130,6 @@ int main(int argc, char **argv)
     running = false;
 
     grpc_thread.join();
+    websocket_thread.join();
     return 0;
 }

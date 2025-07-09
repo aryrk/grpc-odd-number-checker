@@ -35,10 +35,32 @@ public:
             return false;
         }
     }
+    void ClearCache()
+    {
+        google::protobuf::Empty request;
+        google::protobuf::Empty response;
+        grpc::ClientContext context;
+        grpc::Status status = stub_->clearCache(&context, request, &response);
+        if (!status.ok())
+        {
+            std::cerr << "RPC failed: " << status.error_message() << std::endl
+                      << "Error code: " << status.error_code() << std::endl;
+        }
+    }
 
 private:
     std::unique_ptr<CheckService::Stub> stub_;
 };
+
+void numberChecker(CheckServiceClient &client)
+{
+    int number;
+    std::cout << "Enter a number to check if it is odd: ";
+    std::cin >> number;
+
+    bool is_odd = client.IsOddNumber(number);
+    std::cout << "The number " << number << (is_odd ? " is odd." : " is not odd.") << std::endl;
+}
 
 int main(int argc, char **argv)
 {
@@ -47,17 +69,28 @@ int main(int argc, char **argv)
 
     while (true)
     {
-        int number;
-        std::cout << "Enter a number to check if it is odd: ";
-        std::cin >> number;
-
-        bool is_odd = client.IsOddNumber(number);
-        std::cout << "The number " << number << (is_odd ? " is odd." : " is not odd.") << std::endl;
-    
-        std::cout << "Press Enter to continue or Ctrl+C to exit..." << std::endl;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cin.clear();
-        std::cin.get();
+        int input;
+        std::cout << "1. Check if a number is odd\n";
+        std::cout << "2. Clear cache (delete websocket data)\n";
+        std::cout << "3. Exit\n";
+        std::cout << "Enter your choice: ";
+        std::cin >> input;
+        switch (input)
+        {
+        case 1:
+            numberChecker(client);
+            break;
+        case 2:
+            client.ClearCache();
+            std::cout << "Cache cleared." << std::endl;
+            break;
+        case 3:
+            std::cout << "Exiting..." << std::endl;
+            return 0;
+        default:
+            std::cout << "Invalid choice. Please try again." << std::endl;
+            break;
+        }
     }
     return 0;
 }
