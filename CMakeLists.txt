@@ -17,7 +17,7 @@ file(GLOB_RECURSE SOURCES src/*.cpp src/*.cc src/*.h src/*.hpp)
 list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/server.cpp)
 list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/client.cpp)
 
-set(PROTO_SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/proto)
+set(PROTO_SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/src/models/proto_models/number_checker)
 file(MAKE_DIRECTORY ${PROTO_SRC_DIR})
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR} ${PROTO_SRC})
 grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTO_SRC})

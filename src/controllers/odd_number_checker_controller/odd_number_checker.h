@@ -1,7 +1,6 @@
 #pragma once
 #include <grpc++/grpc++.h>
-#include "number_checker.grpc.pb.h"
-
+#include "../../models/proto_models/number_checker/number_checker.grpc.pb.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;

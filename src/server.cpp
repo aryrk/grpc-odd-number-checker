@@ -7,7 +7,6 @@
 
 int main(int argc, char **argv)
 {
-    std::atomic<bool> running_local{true};
 
     std::thread grpc_thread([&]()
                             { RunGrpcServer("0.0.0.0:50051"); });
@@ -17,7 +16,7 @@ int main(int argc, char **argv)
                                  { StartWebSocketServer("9001"); });
 
     std::cin.get();
-    running_local = false;
+    running = false;
 
     grpc_thread.join();
     websocket_thread.join();
