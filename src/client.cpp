@@ -2,31 +2,31 @@
 #include <string>
 
 #include <grpc++/grpc++.h>
-#include "numberchecker.grpc.pb.h"
+#include "number_checker.grpc.pb.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
-using numberchecker::CheckService;
-using numberchecker::OddCheckerRequest;
-using numberchecker::OddCheckerReply;
+using number_checker::NumberCheckerService;
+using number_checker::OddCheckerReply;
+using number_checker::OddCheckerRequest;
 
 class CheckServiceClient
 {
 public:
     CheckServiceClient(std::shared_ptr<grpc::Channel> channel)
-        : stub_(CheckService::NewStub(channel)) {}
-    bool isOddNumber(int number)
+        : stub_(NumberCheckerService::NewStub(channel)) {}
+    bool IsOddNumber(int number)
     {
         OddCheckerRequest request;
         request.set_number(number);
         OddCheckerReply response;
         grpc::ClientContext context;
-        grpc::Status status = stub_->isOddNumber(&context, request, &response);
+        grpc::Status status = stub_->IsOddNumber(&context, request, &response);
         if (status.ok())
         {
-            return response.isodd();
+            return response.is_odd();
         }
         else
         {
@@ -35,12 +35,12 @@ public:
             return false;
         }
     }
-    void clearCache()
+    void ClearCache()
     {
         google::protobuf::Empty request;
         google::protobuf::Empty response;
         grpc::ClientContext context;
-        grpc::Status status = stub_->clearCache(&context, request, &response);
+        grpc::Status status = stub_->ClearCache(&context, request, &response);
         if (!status.ok())
         {
             std::cerr << "RPC failed: " << status.error_message() << std::endl
@@ -49,16 +49,16 @@ public:
     }
 
 private:
-    std::unique_ptr<CheckService::Stub> stub_;
+    std::unique_ptr<NumberCheckerService::Stub> stub_;
 };
 
-void runNumberChecker(CheckServiceClient &client)
+void RunNumberChecker(CheckServiceClient &client)
 {
     int number;
     std::cout << "Enter a number to check if it is odd: ";
     std::cin >> number;
 
-    bool is_odd = client.isOddNumber(number);
+    bool is_odd = client.IsOddNumber(number);
     std::cout << "The number " << number << (is_odd ? " is odd." : " is not odd.") << std::endl;
 }
 
@@ -78,10 +78,10 @@ int main(int argc, char **argv)
         switch (choice)
         {
         case 1:
-            runNumberChecker(client);
+            RunNumberChecker(client);
             break;
         case 2:
-            client.clearCache();
+            client.ClearCache();
             std::cout << "Cache cleared." << std::endl;
             break;
         case 3:

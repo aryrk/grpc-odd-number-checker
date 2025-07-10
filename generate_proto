@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <proto_filename>"
+    exit 1
+fi
+
+PROTO_FILE="$1"
+
+if [ ! -f "$PROTO_FILE" ]; then
+    echo "File not found: $PROTO_FILE"
+    exit 1
+fi
+
+PROTO_DIR=$(dirname "$PROTO_FILE")
+PROTO_BASENAME=$(basename "$PROTO_FILE")
+
+protoc --grpc_out=. --plugin=protoc-gen-grpc="$(which grpc_cpp_plugin)" "$PROTO_FILE"
+protoc -I="$PROTO_DIR" --cpp_out=./"$PROTO_DIR" "$PROTO_FILE"

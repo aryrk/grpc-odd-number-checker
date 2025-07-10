@@ -1,0 +1,16 @@
+syntax = "proto3";
+package number_checker;
+import "google/protobuf/empty.proto";
+
+service NumberCheckerService{
+    rpc IsOddNumber(OddCheckerRequest) returns (OddCheckerReply) {}
+    rpc ClearCache(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}
+
+message OddCheckerRequest{
+    int32 number = 1;
+}
+
+message OddCheckerReply{
+    bool is_odd = 1;
+}
